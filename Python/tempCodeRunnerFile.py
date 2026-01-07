@@ -1,0 +1,1 @@
+print(game_inventory_system)
