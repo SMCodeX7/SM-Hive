@@ -101,6 +101,69 @@ def game_inventory_system(*new_items, action="show", **item_properties):
             else:
                 item_found["durability"] = new_durability
                 return f"Used {item_name}. Durability: {new_durability}"
+        
+        case "sort":
+            sort_by = item_properties.get("by","name")
+            reverse_order = item_properties.get("reverse",False)
+
+            if sort_by == "name":
+                game_inventory_system.inventory.sort(key=lambda item:item["name"],reverse=reverse_order)
+            elif sort_by == "value":
+                game_inventory_system.inventory.sort(key=lambda item:item["value"],reverse=reverse_order)
+            elif sort_by == "rarity":
+                rarity_rank = {
+                    "common" : 1,
+                    "uncommon" : 2,
+                    "rare" : 3,
+                    "epic" : 4,
+                    "legendary" : 5
+                }
+                game_inventory_system.inventory.sort(key=lambda item:rarity_rank.get(item["rarity"],0),reverse=reverse_order)
+
+            else:
+                print("Error. Unknown Sort Method")
+
+            return f"Inventory sorted by {sort_by}" + (" (descending)" if reverse_order else "")
+
+        case "stats":
+            if not game_inventory_system.inventory:
+                return "Inventory Is Empty. No Statistics To Show"
+
+            total_items = len(game_inventory_system.inventory)
+            total_value = sum(item["value"] for item in game_inventory_system.inventory)
+            total_durability = sum(item["durability"] for item in game_inventory_system.inventory)
+            average_durability = total_durability / total_items
+            
+            all_rarities = [item["rarity"] for item in game_inventory_system.inventory]
+            rarity_counts = {}
+            for rarity in all_rarities:
+                if rarity in rarity_counts:
+                    rarity_counts[rarity] += 1
+                else:
+                    rarity_counts[rarity] = 1
+
+            most_valuable = None
+            highest_value = 0
+
+            for item in game_inventory_system.inventory:
+                if item["value"] > highest_value:
+                    highest_value = item["value"]
+                    most_valuable = item["name"]
+            
+            result = f"""
+                📊 INVENTORY STATISTICS
+                Total Items: {total_items}
+                Total Value: ${total_value}
+                Average Durability: {average_durability:.1f}
+
+                Rarity Distribution:"""
+
+            for rarity, count in rarity_counts.items():
+                    result += f"\n  {rarity.title()}: {count}"
+
+            result += f"\n\nMost Valuable: {most_valuable} (${highest_value})"
+
+            return result
 
         case _:
             return "none"
