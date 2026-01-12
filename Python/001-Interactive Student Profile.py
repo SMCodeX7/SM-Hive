@@ -66,9 +66,9 @@ print("=" * 50)
 if float_gpa > 3.5:
     print("Excellent work, Keep it up!!")
 elif float_gpa > 3.0:
-    print("Good work, Keep it up!!")
+    print("Good Work, Keep It Up!!")
 else:
-    print("You need improvement")
+    print("You Need Improvement")
 
 print("Student Profile Completed Successfully")
 print("=" * 50)
